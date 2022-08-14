@@ -36,8 +36,6 @@ if($accion!='') {
         break;
 
         case 'Seleccionar' :
-            echo "Presionaste seleccionar";
-            echo $id;
             $sql="SELECT * FROM alumnos  WHERE id=:id";
             $consulta=$conexionBD->prepare($sql);
             $consulta->bindParam('id',$id);
@@ -46,24 +44,60 @@ if($accion!='') {
             $nombres=$alumno['nombres'];
             $apellidos=$alumno['apellidos'];
 
+            $sql="SELECT cursos.id FROM alumnos_cursos
+            INNER JOIN cursos ON cursos.id=alumnos_cursos.id_curso
+            WHERE alumnos_cursos.id_alumno=:id_alumno";
+            $consulta=$conexionBD->prepare($sql);
+            $consulta->bindParam(':id_alumno',$id);
+            $consulta->execute();
+            $cursosAlumno=$consulta->fetchAll(PDO::FETCH_ASSOC);
+            
+            foreach($cursosAlumno as $curso) {
+                $arregloCursos[]=$curso['id'];
+            }
+             
         break;
-        /*case 'editar' :
+        case 'editar' :
 
-            $sql="UPDATE alumnos SET nombre_curso=:nombre_curso WHERE id=:id";
+            $sql="UPDATE alumnos SET nombres=:nombres, apellidos=:apellidos WHERE id=:id";
             $consulta=$conexionBD->prepare($sql);
             $consulta->bindParam(':id',$id);
-            $consulta->bindParam(':nombre_curso',$nombre_curso);
+            $consulta->bindParam(':nombres',$nombres);
+            $consulta->bindParam(':apellidos',$apellidos);
             $consulta->execute();
+
+            if(isset($cursos)) {
+
+                $sql="DELETE FROM alumnos_cursos  WHERE id_alumno=:id_alumno";
+                $consulta=$conexionBD->prepare($sql);
+                $consulta->bindParam(':id_alumno',$id);
+                $consulta->execute();
+
+                foreach($cursos as $curso) {
+
+                    $sql="INSERT INTO alumnos_cursos (id, id_alumno, id_curso) 
+                VALUES (NULL, :id_alumno, :id_curso)";
+                $consulta=$conexionBD->prepare($sql);
+                $consulta->bindParam(':id_alumno',$id);
+                $consulta->bindParam(':id_curso',$curso);
+                $consulta->execute();
+
+                }
+
+                $arregloCursos=$cursos;
+            }
+
+
             
         break;
         case 'borrar' :
 
-            $sql="DELETE FROM alumnos  WHERE id=$id";
+            $sql="DELETE FROM alumnos  WHERE id=:id";
             $consulta=$conexionBD->prepare($sql);
             $consulta->bindParam(':id',$id);
             $consulta->execute();
             
-        break;*/
+        break;
         
 
     }

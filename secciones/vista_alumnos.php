@@ -41,7 +41,17 @@
                     <label for="" class="form-label">Cursos del alumno:</label>
                     <select multiple placeholder="Seleccione de la lista" class="form-control" name="cursos[]" id="listaCursos">
                       <?php foreach($cursos as $curso){ ?>
-                        <option value="<?php echo $curso['id']; ?>"><?php echo $curso['id']; ?> - <?php echo $curso['nombre_curso']; ?> </option>
+                        <option 
+                        <?php
+                              if(!empty($arregloCursos)):
+                                    if(in_array($curso['id'],$arregloCursos)):
+                                          echo 'selected';
+                                    endif;
+                              endif;
+                        ?>
+                        value="<?php echo $curso['id']; ?>">
+                        <?php echo $curso['id']; ?> - <?php echo $curso['nombre_curso']; ?> 
+                        </option>
 
                       <?php } ?>
                       
